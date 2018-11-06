@@ -10,12 +10,12 @@ const client = new Client ({
 
 app.get('/users', (req, res) => {
     client.query('SELECT * FROM users', (err, result) => {
-        res.send(result.rows);
         if (err){
             console.log(err);
             res.status(500);
-            return res.send(err, "things went bad, mate.")
+            return res.send()
         }
+        res.send(result.rows);
     });
 });
 
@@ -35,12 +35,17 @@ app.get('/users/:id', (req, res) => {
     let id = req.params.id
     const values = [id]
     client.query('SELECT * FROM users WHERE id=$1', values, (err, result) => {
-        res.send(result.rows[0]);
         if (err){
             console.log(err);
             res.status(500);
-            return res.send(err, "things went bad, mate.")
+            return res.send()
         }
+        if(result.rows.length === 0){
+            res.status(404);
+            return res.send()
+
+        }
+        res.send(result.rows[0]);
     });
 });
 
